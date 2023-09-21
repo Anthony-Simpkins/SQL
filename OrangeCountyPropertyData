@@ -1,0 +1,253 @@
+
+.open --new "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/database/Orange_county_property_sale_hwreview.db"
+.open  "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/database/Orange_county_property_sale.db"
+.tables
+.schema
+
+CREATE TABLE property_characteristics 
+(
+pid                 INTEGER ,
+propertyusecode     TEXT ,
+totalareasqft       INTEGER ,
+totalcamaareasqft   INTEGER ,
+totalbedroom        INTEGER ,
+totalbath           REAL ,
+datebuilt           TEXT ,
+PRIMARY KEY         (pid)
+FOREIGN KEY (pid) REFERENCES sales_dates_and_prices (pid),
+FOREIGN KEY (pid) REFERENCES cities_and_zipcodes (pid)
+);
+
+
+.mode tabs
+.import --skip 1 "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/data/property_characteristics.txt" property_characteristics
+
+.mode column
+.headers on 
+
+
+CREATE TABLE cities_and_zipcodes
+(
+pid                 INTEGER ,
+situscity           TEXT ,
+situszip            TEXT ,
+PRIMARY KEY         (pid)
+);
+
+.mode tabs
+.import --skip 1 "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/data/cities_and_zipcodes.txt" cities_and_zipcodes
+
+
+
+CREATE TABLE sales_dates_and_prices
+(
+pid                 INTEGER ,
+saledatelatest      TEXT ,
+salepricelatest     TEXT ,
+PRIMARY KEY         (pid)
+);
+
+
+.mode tabs
+.import --skip 1 "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/data/sales_dates_and_prices.txt" sales_dates_and_prices
+
+.mode column
+.headers on 
+
+-- C
+-- Query to determine the total number of sales associated with each property type/use code.
+SELECT propertyusecode, COUNT(propertyusecode) AS 'Number of Sales'
+FROM property_characteristics
+GROUP BY propertyusecode
+ORDER BY "Number of Sales" DESC;
+
+-- D
+-- Update property use codes with their titles from 'Code Descriptions and Lookup Tables'.
+UPDATE property_characteristics
+SET propertyusecode = 
+CASE
+    WHEN propertyusecode BETWEEN '100' AND '106' THEN 'Single Family'
+    WHEN propertyusecode = '130' THEN 'Lake Front'
+    WHEN propertyusecode = '131' THEN 'Canal Front'
+    WHEN propertyusecode = '135' THEN 'Lake View'
+    WHEN propertyusecode = '140' THEN 'Golf'
+    ELSE propertyusecode
+END;
+
+-- Query with updated property codes
+SELECT propertyusecode, COUNT(propertyusecode) AS 'Number of Sales'
+FROM property_characteristics
+GROUP BY propertyusecode
+ORDER BY "Number of Sales" DESC;
+
+-- E
+-- Query for summary information on property characteristics.
+SELECT  AVG(totalareasqft) AS 'Avg Total SqFt',
+        MIN(totalareasqft) AS 'Min Total SqFt',
+        MAX(totalareasqft) AS 'Max Total SqFt',
+        AVG(totalcamaareasqft) AS 'Avg SqFt Central Air',
+        MIN(totalcamaareasqft) AS 'Min SqFt Central Air',
+        MAX(totalcamaareasqft) AS 'Max SqFt Central Air'
+FROM property_characteristics;
+
+SELECT  AVG(totalbedroom) AS 'Avg Bedrooms',
+        MIN(totalbedroom) AS 'Min Bedrooms',
+        MAX(totalbedroom) AS 'Max Bedrooms',
+        AVG(totalbath) AS 'Avg Bathrooms',
+        MIN(totalbath) AS 'Min Bathrooms',
+        MAX(totalbath) AS 'Max Bathrooms'
+FROM property_characteristics;
+
+-- F
+-- Modify E to obtain summary information for specific property types for comparison.
+SELECT  propertyusecode ,
+        AVG(totalareasqft) AS 'Avg Total SqFt',
+        MIN(totalareasqft) AS 'Min Total SqFt',
+        MAX(totalareasqft) AS 'Max Total SqFt',
+        AVG(totalcamaareasqft) AS 'Avg SqFt Central Air',
+        MIN(totalcamaareasqft) AS 'Min SqFt Central Air',
+        MAX(totalcamaareasqft) AS 'Max SqFt Central Air'
+FROM property_characteristics
+WHERE propertyusecode = 'Lake Front' OR propertyusecode = 'Golf' OR propertyusecode = 'Canal Front'
+GROUP BY propertyusecode;
+
+
+SELECT  propertyusecode ,
+        AVG(totalbedroom) AS 'Avg Bedrooms',
+        MIN(totalbedroom) AS 'Min Bedrooms',
+        MAX(totalbedroom) AS 'Max Bedrooms',
+        AVG(totalbath) AS 'Avg Bathrooms',
+        MIN(totalbath) AS 'Min Bathrooms',
+        MAX(totalbath) AS 'Max Bathrooms'
+FROM property_characteristics
+WHERE propertyusecode = 'Lake Front' OR propertyusecode = 'Golf' OR propertyusecode = 'Canal Front'
+GROUP BY propertyusecode;
+
+-- G
+-- Query for summary information on property age (in years) as of 2023.
+SELECT  SUBSTR(datebuilt,1,4) AS 'Date Built',
+        (2023 - CAST(SUBSTR(datebuilt,1,4) AS INTEGER)) AS 'Age of Property' ,
+        COUNT(2023 - CAST(SUBSTR(datebuilt,1,4) AS INTEGER)) AS 'Amount of Properties' ,
+        AVG(totalareasqft) AS 'Avg Total SqFt',
+        MIN(totalareasqft) AS 'Min Total SqFt',
+        MAX(totalareasqft) AS 'Max Total SqFt',
+        AVG(totalcamaareasqft) AS 'Avg SqFt Central Air',
+        MIN(totalcamaareasqft) AS 'Min SqFt Central Air',
+        MAX(totalcamaareasqft) AS 'Max SqFt Central Air'
+FROM property_characteristics
+GROUP BY "Age of Property"
+ORDER BY "Age of Property" ;
+
+SELECT  SUBSTR(datebuilt,1,4) AS 'Date Built',
+        (2023 - CAST(SUBSTR(datebuilt,1,4) AS INTEGER)) AS 'Age of Property' ,
+        COUNT(2023 - CAST(SUBSTR(datebuilt,1,4) AS INTEGER)) AS 'Amount of Properties' ,
+        AVG(totalbedroom) AS 'Avg Bedrooms',
+        MIN(totalbedroom) AS 'Min Bedrooms',
+        MAX(totalbedroom) AS 'Max Bedrooms',
+        AVG(totalbath) AS 'Avg Bathrooms',
+        MIN(totalbath) AS 'Min Bathrooms',
+        MAX(totalbath) AS 'Max Bathrooms'
+FROM property_characteristics
+GROUP BY "Age of Property"
+ORDER BY "Age of Property" ;
+
+-- H
+-- Query for summary information on the most recent sales prices.
+
+-- Set schema salepricelatest to text, so I'm casting as int
+
+SELECT  AVG(CAST(salepricelatest AS INTEGER)) AS AverageSalePrice,
+        MIN(CAST(salepricelatest AS INTEGER)) AS MinimumSalePrice,
+        MAX(CAST(salepricelatest AS INTEGER)) AS MaximumSalePrice
+FROM sales_dates_and_prices;
+
+-- I
+-- Modify H to obtain summary information on sales between 2013 and 2018.
+
+SELECT  CAST(SUBSTR(saledatelatest,1,4)AS INTEGER) AS 'Sale Date Year',
+        AVG(CAST(salepricelatest AS INTEGER)) AS AverageSalePrice,
+        MIN(CAST(salepricelatest AS INTEGER)) AS MinimumSalePrice,
+        MAX(CAST(salepricelatest AS INTEGER)) AS MaximumSalePrice
+FROM sales_dates_and_prices
+WHERE "Sale Date Year" >= 2013 AND "Sale Date Year" <= 2018
+GROUP BY "Sale Date Year"
+;
+
+-- J
+-- Modify I to report summary information on a yearly basis for cities and zip codes.
+
+-- by city
+SELECT  C.situscity,
+        CAST(SUBSTR(saledatelatest,1,4)AS INTEGER) AS 'Sale Date Year',
+        AVG(CAST(salepricelatest AS INTEGER)) AS AverageSalePrice,
+        MIN(CAST(salepricelatest AS INTEGER)) AS MinimumSalePrice,
+        MAX(CAST(salepricelatest AS INTEGER)) AS MaximumSalePrice
+FROM sales_dates_and_prices S INNER JOIN cities_and_zipcodes C 
+ON C.pid = S.pid
+WHERE "Sale Date Year" >= 2013 AND "Sale Date Year" <= 2018
+GROUP BY "Sale Date Year", C.situscity
+;
+
+-- by zip
+SELECT  C.situszip,
+        CAST(SUBSTR(saledatelatest,1,4)AS INTEGER) AS 'Sale Date Year',
+        AVG(CAST(salepricelatest AS INTEGER)) AS AverageSalePrice,
+        MIN(CAST(salepricelatest AS INTEGER)) AS MinimumSalePrice,
+        MAX(CAST(salepricelatest AS INTEGER)) AS MaximumSalePrice
+FROM sales_dates_and_prices S INNER JOIN cities_and_zipcodes C 
+ON C.pid = S.pid
+WHERE "Sale Date Year" >= 2013 AND "Sale Date Year" <= 2018
+GROUP BY "Sale Date Year", C.situszip
+;
+
+-- city and zip
+WITH CTE AS (SELECT  C.situscity,
+        C.situszip,
+        CAST(SUBSTR(saledatelatest,1,4)AS INTEGER) AS 'Sale Date Year',
+        ROUND(AVG(CAST(salepricelatest AS INTEGER)),2) AS AverageSalePrice,
+        MIN(CAST(salepricelatest AS INTEGER)) AS MinimumSalePrice,
+        MAX(CAST(salepricelatest AS INTEGER)) AS MaximumSalePrice
+FROM sales_dates_and_prices S INNER JOIN cities_and_zipcodes C 
+ON C.pid = S.pid
+WHERE "Sale Date Year" >= 2013 AND "Sale Date Year" <= 2018
+GROUP BY "Sale Date Year", C.situszip)
+
+SELECT situscity, situszip, "Sale Date Year", AverageSalePrice
+FROM CTE
+ORDER BY "Sale Date Year" DESC, AverageSalePrice DESC
+;
+
+-- The price of Winter Park Homes in the 32789 area code have the highest avg sales prices over the last 5 years relative to other cities
+-- With Orlando (32814) in second in terms of highest avg sales price indicating higher value areas
+-- The properties in 32808 zip experienced a 42 percent change in AVG Sales price over the years 2017 to 2018
+-- Zellwood (32798) and Christmas (32709), consistently have lower average sale prices indicating lower demand and lower value areas
+
+
+
+
+-- K
+-- Query that joins all 3 tables and export the output to a CSV file.
+
+.mode csv
+.headers on
+.output "C:/Users/simpk/OneDrive/Desktop/ECO4444/sql/intermediate_data/Residential_Properties1.csv"
+
+SELECT  P.pid,
+        P.propertyusecode,
+        P.totalareasqft,
+        P.totalcamaareasqft,
+        P.totalbedroom,
+        P.totalbath,
+        P.datebuilt,
+        S.saledatelatest,
+        S.salepricelatest,
+        C.situscity,
+        C.situszip
+FROM property_characteristics P JOIN sales_dates_and_prices S 
+ON P.pid = S.pid
+JOIN cities_and_zipcodes C 
+ON P.pid = C.pid;
+
+.output stdout
+.mode column
+.headers on 
