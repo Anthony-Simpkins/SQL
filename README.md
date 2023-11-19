@@ -20,7 +20,14 @@ SQLite commands for comprehensive data analysis.
 
 ## Orange_County_Property_Data
 ### Overview:
-The Orange_County_Property_Data project involves the comprehensive exploration of residential properties and property sales in Orange County, Florida, using a dataset comprised of three distinct files. The process begins with the download and examination of these files to confirm contents and field names. Subsequently, a SQLite database named Residential_Properties.db is created, housing three tables (Characteristics, Sales, and Locations) with exact field names. The project encompasses property type analysis, updating property use codes, deriving property characteristics summaries, comparing different property types, analyzing property age, summarizing recent sales prices, and reporting sales prices on a yearly basis. The final step involves joining tables and exporting the results to a file for further examination.
+- The Orange_County_Property_Data project involves a comprehensive exploration of residential properties and property sales in Orange County, Florida.
+- The process begins with downloading and examining three distinct files to confirm contents and field names.
+- A SQLite database named Residential_Properties.db is created, housing three tables (Characteristics, Sales, and Locations) with exact field names.
+- The project encompasses property type analysis, updating property use codes, deriving property characteristics summaries, comparing different property types, analyzing property age, summarizing recent sales prices, and reporting sales prices on a yearly basis.
+- The final step involves joining tables and exporting the results to a file for further examination.
 
 ### Purpose:
-The purpose of the Orange_County_Property_Data project is to conduct a thorough analysis of residential properties and sales data in Orange County, Florida. By leveraging SQLite database management and query techniques, the project aims to derive valuable insights into property characteristics, sales trends, and pricing dynamics. The exploration includes assessments of property type sales, updates to property use codes, summaries of property characteristics, comparisons between different property types, analyses of property age, and evaluations of recent and historical sales prices. The ultimate goal is to provide a comprehensive understanding of the residential property landscape in Orange County and facilitate informed decision-making for relevant stakeholders.
+- The purpose of the Orange_County_Property_Data project was to conduct a thorough analysis of residential properties and sales data in Orange County, Florida.
+- Leveraging SQLite database management and query techniques, the project aims to derive valuable insights into property characteristics, sales trends, and pricing dynamics.
+- The exploration includes assessments of property type sales, updates to property use codes, summaries of property characteristics, comparisons between different property types, analyses of property age, and evaluations of recent and historical sales prices.
+- The ultimate goal was to provide a comprehensive understanding of the residential property landscape in Orange County and facilitate informed decision-making for relevant stakeholders.
